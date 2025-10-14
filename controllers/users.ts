@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { collections } from '../src/database';
-import { User } from '../src/models/users';
+import { User } from '../src/models/user';
 import { ObjectId } from 'mongodb';
-import { createUserSchema } from '../src/models/users';
+import { createUserSchema } from '../src/models/user';
 import { date } from 'zod';
 
 
