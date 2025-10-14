@@ -1,0 +1,30 @@
+@endpoint = http://localhost:3001/api/v1/users
+# @name postAUser
+
+###
+### POST Request for a contact 
+## Expected result is ........
+
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+
+{ "name" : "Monday is here",
+   "email": "jdoe123@gmail.com",
+   "phonenumber" : "0871234567",
+   "dob": "1990-05-15"}
+
+@newObjectID = {{postAUser.response.headers.location}}
+@firstID = {{GETAllUsers.response.body.$[0]._id}}
+# @name GETAllUsers
+### GET Request for all users
+## Expected result is ........
+GET {{endpoint}}/{{newObjectID}} HTTP/1.1
+### Another POST Request for a contact
+## Expected result is ........
+POST http://localhost:3001/api/v1/users HTTP/1.1
+content-type: application/json
+
+{ "name" : "Elain Polakova",
+   "phonenumber" : "0871234567",
+   "email": "s00250500@atu.ie"}
+
