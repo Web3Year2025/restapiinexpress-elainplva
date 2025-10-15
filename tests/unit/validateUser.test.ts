@@ -31,8 +31,8 @@ describe('Date of Birth Validation', () => {
         ];
 
         invalidDates.forEach((date) => {
-          expect(() => createUserSchema.parse(
-              { ...validUser, dob: date })).toThrow(); 
+          const result = createUserSchema.safeParse({ ...validUser, dob: date });
+          expect(result.success).toBe(false);
         });
     
     });

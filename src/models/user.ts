@@ -9,6 +9,7 @@ export interface User {
     dob?: Date;
     dateJoined?: Date;
     lastUpdate?: Date;
+    
 
 }
 
@@ -18,6 +19,6 @@ export const createUserSchema = z.object({
   dob: z.coerce.date(),
   phonenumber: z.string()
 
-
+  
 });
 
