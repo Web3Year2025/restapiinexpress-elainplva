@@ -17,4 +17,7 @@ export const createUserSchema = z.object({
   email: z.email(),
   dob: z.coerce.date(),
   phonenumber: z.string()
+
+
 });
+
