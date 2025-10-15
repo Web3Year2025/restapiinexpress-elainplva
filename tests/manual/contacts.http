@@ -1,0 +1,18 @@
+@endpoint = http://localhost:3001/api/v1/users
+###
+### POST Request for a contact 
+## Expected result is ........
+# @name postAUser
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+
+{ "name" : "Elain Polakova",
+   "phonenumber" : "0871234567",
+   "email": "s00250500@atu.ie",
+   "dob": "2005-03-15"}
+### Another POST Request for a contact
+## Expected result is ........
+###
+@newObjectId = {{postAUser.response.headers.location}}
+
+GET {{{{endpoint}}/{{newObjectId}}}} HTTP/1.1

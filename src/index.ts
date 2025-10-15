@@ -19,12 +19,5 @@ app.get("/ping", async (_req : Request, res: Response) => {
 });
 
 
-async function startServer() {
-  await initDb();
-  app.listen(PORT, () => {
-    console.log("PORT from env:", process.env.PORT);
-    console.log("Server is running on port", PORT);
-  });
-}
-
-startServer();
+initDb();
+export { app };
