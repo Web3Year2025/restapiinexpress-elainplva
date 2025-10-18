@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
-export interface User {
+export interface Album {
   id?: ObjectId;
   title: string;
   artist: string;
