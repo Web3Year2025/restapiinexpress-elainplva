@@ -1,0 +1,30 @@
+@endpoint = http://localhost:3001/api/v1/albums
+###
+### POST Request for a contact 
+## Expected result is ........
+# @name postAlbum
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+
+{ 
+   "title": "The Dark Side of the Moon",
+   "artist": "Pink Floyd",
+   "rating": 5,
+   "acquiredDate": "2023-10-15",
+   "isBorrowed": false,
+   "owner": "Elain"
+}
+### Another POST Request for a contact
+## Expected result is ........
+###
+@newObjectId = {{postAlbum.response.headers.location}}
+
+GET {{{{endpoint}}/{{newObjectId}}}} HTTP/1.1
+###
+GET {{endpoint}} HTTP/1.1
+###
+### PUT Request to update the album
+## Expected result is ..........
+PUT {{endpoint}}/{{newObjectId}} HTTP/1.1
+###
+DELETE {{endpoint}}/{{newObjectId}} HTTP/1.1
