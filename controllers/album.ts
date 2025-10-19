@@ -74,28 +74,12 @@ export const createAlbum = async (req: Request, res: Response) => {
 
 // Update album
 export const updateAlbum = async (req: Request, res: Response) => {
-  const id = new ObjectId(req.params.id);
-  const update = { $set: req.body };
+ console.log(req.body); //for now just log the data
 
-  try {
-    const result = await collections.albums?.updateOne({ _id: id }, update);
-    result?.matchedCount
-      ? res.status(200).send("Album updated")
-      : res.status(404).send("Album not found");
-  } catch {
-    res.status(400).send("Update failed");
-  }
+  res.json({"message": `update album ${req.params.id} with data from the post message`})
 };
 
 // Delete album
 export const deleteAlbum = async (req: Request, res: Response) => {
-  const id = new ObjectId(req.params.id);
-  try {
-    const result = await collections.albums?.deleteOne({ _id: id });
-    result?.deletedCount
-      ? res.status(200).send("Album deleted")
-      : res.status(404).send("Album not found");
-  } catch {
-    res.status(400).send("Delete failed");
-  }
+  res.json({"message": `delete album ${req.params.id}`})
 };

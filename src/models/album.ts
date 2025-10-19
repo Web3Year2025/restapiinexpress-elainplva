@@ -14,8 +14,8 @@ export interface Album {
 }
 
 export const createAlbumSchema = z.object({
-  title: z.string().min(1, "Album title is required"),
-  artist: z.string().min(1, "Artist name is required"),
+  title: z.string().min(1),
+  artist: z.string().min(1),
   rating: z.number().min(1).max(5).optional(),
   acquiredDate: z.coerce.date(),
   isBorrowed: z.boolean(),
