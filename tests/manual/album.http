@@ -1,7 +1,7 @@
 @endpoint = http://localhost:3001/api/v1/albums
 # @name postAlbum
 ###
-### POST Request for a contact 
+### POST Request for a album 
 ## Expected result is ........
 POST {{endpoint}} HTTP/1.1
 content-type: application/json
@@ -18,10 +18,10 @@ content-type: application/json
 @newObjectId = {{postAlbum.response.headers.location}}
 @firstID = {{GETAllAlbums.response.body.[0]._id}}
 # @name GETAllAlbums
-### GET Request for all users
+### GET Request for all albums
 ## Expected result is ........
 GET {{endpoint}}/{{newObjectId}} HTTP/1.1
-### Another POST Request for a contact
+### Another POST Request for a album
 ## Expected result is ........
 POST {{endpoint}} HTTP/1.1
 content-type: application/json
@@ -30,8 +30,8 @@ content-type: application/json
    "artist": "The Beatles",
    "rating": 5,
    "acquiredDate": "2022-05-20",
-   "isBorrowed": true,
-   "owner": "John"
+   "isBorrowed": false,
+   "owner": "Elain"
 }
 ### PUT Request to update the album
 ## Expected result is ..........
