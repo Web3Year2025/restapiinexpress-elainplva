@@ -2,7 +2,7 @@ import express, {Application, Request, Response} from "express";
 import morgan from "morgan";
 import albumRoutes from '../routes/albums';
 import dotenv from 'dotenv';
-import { initDb } from '../src/database';
+import { initDb } from './database';
 
 dotenv.config();
 

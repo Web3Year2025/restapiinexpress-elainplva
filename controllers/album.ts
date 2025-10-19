@@ -9,8 +9,10 @@ import { date } from 'zod';
 // Get all albums
 export const getAlbums = async (req: Request, res: Response) => {
   try {
+
     const albums = (await collections.albums?.find({}).toArray()) as unknown as Album [];
     res.status(200).send(albums);
+
   } catch (error) {
     if (error instanceof Error)
     {
@@ -49,8 +51,16 @@ export const createAlbum = async (req: Request, res: Response) => {
   console.log(req.body);
   const validation = createAlbumSchema.safeParse(req.body);
 
+  if (!validation.success) {
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: validation.error.issues
+    });
+  }
+
   const { title, artist, rating, acquiredDate, isBorrowed, owner } = req.body;
-  const newAlbum: Album = {title: title, artist: artist, rating: rating, acquiredDate: new Date(), isBorrowed: isBorrowed, owner: owner};
+  const newAlbum: Album = {title: title, artist: artist, rating: rating, acquiredDate: new Date(), 
+    isBorrowed: isBorrowed, owner: owner};
 
   try {
     const result = await collections.albums?.insertOne(newAlbum);
