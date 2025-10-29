@@ -8,13 +8,13 @@
       "src"
     ],
     "ext": "ts",
-    "exec": "ts-node src/index.ts"
+    "exec": "ts-node src/server.ts"
   },
   "scripts": {
     "test": "jest --no-cache --detectOpenHandles",
     "build": "tsc",
     "dev": "nodemon",
-    "start": "node build/index.js"
+    "start": "node build/server.js"
   },
   "keywords": [],
   "author": "",

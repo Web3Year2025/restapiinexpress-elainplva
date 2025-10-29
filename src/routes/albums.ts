@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { validate } from '../src/middleware/validate.middleware';
-import { createAlbumSchema } from '../src/models/album';
+import { validate } from '../middleware/validate.middleware';
+import { createAlbumSchema } from '../models/album';
 import {
   getAlbums,
   getAlbumById,

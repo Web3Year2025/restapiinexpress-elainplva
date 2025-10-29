@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { collections } from '../src/database';
-import { Album } from '../src/models/album';
+import { collections } from '../database';
+import { Album } from '../models/album';
 import { ObjectId } from 'mongodb';
-import { createAlbumSchema } from '../src/models/album';
+import { createAlbumSchema } from '../models/album';
 import { date } from 'zod';
 
 
