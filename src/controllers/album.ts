@@ -9,14 +9,13 @@ import { date } from 'zod';
 // Get all albums
 export const getAlbums = async (req: Request, res: Response) => {
   try {
-    const albums = (await collections.albums?.find({}).toArray()) as unknown as Album [];
+    const albums = (await collections.albums?.find({}).toArray()) as unknown as Album[];
     res.status(200).send(albums);
   } catch (error) {
-    if (error instanceof Error)
-    {
-     console.log(`issue with inserting ${error.message}`);
+    if (error instanceof Error) {
+      console.log(`issue with inserting ${error.message}`);
     }
-    else{
+    else {
       console.log(`error with ${error}`)
     }
     res.status(500).send("Unable to fetch albums");
@@ -28,19 +27,20 @@ export const getAlbumById = async (req: Request, res: Response) => {
   let id: string = req.params.id;
   try {
     const query = { _id: new ObjectId(id) };
-    const album = (await collections.albums?.findOne({ query })) as unknown as Album;
-    if (album)  {
-    res.status(200).send(album);
+    const album = (await collections.albums?.findOne(query)) as unknown as Album;
+    if (album) {
+      res.status(200).send(album);
+    } else {
+      res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
     }
-  } catch (error){
-    if (error instanceof Error)
-    {
-     console.log(`issue with inserting ${error.message}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`issue with inserting ${error.message}`);
     }
-    else{
+    else {
       console.log(`error with ${error}`)
     }
-    res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
+    res.status(400).send(`Invalid album id format: ${req.params.id}`);
   }
 };
 
@@ -49,8 +49,20 @@ export const createAlbum = async (req: Request, res: Response) => {
   console.log(req.body);
   const validation = createAlbumSchema.safeParse(req.body);
 
-  const { title, artist, rating, acquiredDate, isBorrowed, owner } = req.body;
-  const newAlbum: Album = {title: title, artist: artist, rating: rating, acquiredDate: new Date(), isBorrowed: isBorrowed, owner: owner};
+  if (!validation.success) {
+    res.status(400).send({ error: "Validation failed", details: validation.error.issues });
+    return;
+  }
+
+  const validatedData = validation.data;
+  const newAlbum: Album = {
+    title: validatedData.title,
+    artist: validatedData.artist,
+    rating: validatedData.rating,
+    acquiredDate: validatedData.acquiredDate,
+    isBorrowed: validatedData.isBorrowed,
+    owner: validatedData.owner
+  };
 
   try {
     const result = await collections.albums?.insertOne(newAlbum);
@@ -61,11 +73,10 @@ export const createAlbum = async (req: Request, res: Response) => {
       res.status(500).send("Failed to create a new album.");
     }
   } catch (error) {
-    if (error instanceof Error)
-    {
-     console.log(`issue with inserting ${error.message}`);
+    if (error instanceof Error) {
+      console.log(`issue with inserting ${error.message}`);
     }
-    else{
+    else {
       console.log(`error with ${error}`)
     }
     res.status(400).send(`Unable to create new album.`);
@@ -74,12 +85,12 @@ export const createAlbum = async (req: Request, res: Response) => {
 
 // Update album
 export const updateAlbum = async (req: Request, res: Response) => {
- console.log(req.body); //for now just log the data
+  console.log(req.body); //for now just log the data
 
-  res.json({"message": `update album ${req.params.id} with data from the post message`})
+  res.json({ "message": `update album ${req.params.id} with data from the post message` })
 };
 
 // Delete album
 export const deleteAlbum = async (req: Request, res: Response) => {
-  res.json({"message": `delete album ${req.params.id}`})
+  res.json({ "message": `delete album ${req.params.id}` })
 };
