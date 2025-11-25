@@ -21,7 +21,7 @@ export async function initDb(): Promise<void> {
     try {
         await client.connect();
         db = client.db(dbName);
-        const albumsCollection: Collection = db.collection('users')
+        const albumsCollection: Collection = db.collection('albums')
         collections.albums = albumsCollection;
         console.log('connected to database')
 

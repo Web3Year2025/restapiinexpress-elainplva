@@ -9,8 +9,14 @@ import { date } from 'zod';
 // Get all albums
 export const getAlbums = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD:src/controllers/album.ts
     const albums = (await collections.albums?.find({}).toArray()) as unknown as Album[];
+=======
+
+    const albums = (await collections.albums?.find({}).toArray()) as unknown as Album [];
+>>>>>>> d530800d06f7e813b84c75e7302bd8224d895fa8:controllers/album.ts
     res.status(200).send(albums);
+
   } catch (error) {
     if (error instanceof Error) {
       console.log(`issue with inserting ${error.message}`);
@@ -50,6 +56,7 @@ export const createAlbum = async (req: Request, res: Response) => {
   const validation = createAlbumSchema.safeParse(req.body);
 
   if (!validation.success) {
+<<<<<<< HEAD:src/controllers/album.ts
     res.status(400).send({ error: "Validation failed", details: validation.error.issues });
     return;
   }
@@ -63,6 +70,17 @@ export const createAlbum = async (req: Request, res: Response) => {
     isBorrowed: validatedData.isBorrowed,
     owner: validatedData.owner
   };
+=======
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: validation.error.issues
+    });
+  }
+
+  const { title, artist, rating, acquiredDate, isBorrowed, owner } = req.body;
+  const newAlbum: Album = {title: title, artist: artist, rating: rating, acquiredDate: new Date(), 
+    isBorrowed: isBorrowed, owner: owner};
+>>>>>>> d530800d06f7e813b84c75e7302bd8224d895fa8:controllers/album.ts
 
   try {
     const result = await collections.albums?.insertOne(newAlbum);
