@@ -14,11 +14,7 @@ app.use(express.json());
 app.use('/api/v1/albums', albumRoutes);
 app.get("/ping", async (_req: Request, res: Response) => {
     res.json({
-<<<<<<< HEAD
         message: "hello from Elain Polakova s00250500",
-=======
-    message: "Album endpoint implemented",
->>>>>>> d530800d06f7e813b84c75e7302bd8224d895fa8
     });
 });
 
