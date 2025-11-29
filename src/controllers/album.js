@@ -1,3 +1,4 @@
+
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAlbum = exports.updateAlbum = exports.createAlbum = exports.getAlbumById = exports.getAlbums = void 0;
@@ -79,3 +80,18 @@ const deleteAlbum = async (req, res) => {
     res.json({ "message": `delete album ${req.params.id}` });
 };
 exports.deleteAlbum = deleteAlbum;
+
+// GET /albums/search
+router.get('/search', async (req, res) => {
+  try {
+    const query = req.query.query || "";
+    const albums = await Album.find({
+      title: { $regex: query, $options: "i" }   
+    });
+
+    res.json(albums);
+  } catch (error) {
+    res.status(500).json({ message: "Search failed" });
+  }
+});
+
