@@ -3,95 +3,132 @@ import { collections } from '../database';
 import { Album } from '../models/album';
 import { ObjectId } from 'mongodb';
 import { createAlbumSchema } from '../models/album';
-import { date } from 'zod';
 
-
-// Get all albums
 export const getAlbums = async (req: Request, res: Response) => {
   try {
-    const albums = (await collections.albums?.find({}).toArray()) as unknown as Album[];
-    res.status(200).send(albums);
-
+    const albums = await collections.albums?.find({}).toArray();
+    res.status(200).json(albums);
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(`issue with inserting ${error.message}`);
-    }
-    else {
-      console.log(`error with ${error}`)
-    }
+    console.error("Error fetching albums:", error);
     res.status(500).send("Unable to fetch albums");
   }
 };
 
-// Get one album by ID
 export const getAlbumById = async (req: Request, res: Response) => {
-  let id: string = req.params.id;
+  const id = req.params.id;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send("Invalid album id format");
+  }
+
   try {
     const query = { _id: new ObjectId(id) };
-    const album = (await collections.albums?.findOne(query)) as unknown as Album;
-    if (album) {
-      res.status(200).send(album);
-    } else {
-      res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
+    const album = await collections.albums?.findOne(query);
+
+    if (!album) {
+      return res.status(404).send(`Unable to find matching document with id: ${id}`);
     }
+
+    res.status(200).json(album);
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(`issue with inserting ${error.message}`);
-    }
-    else {
-      console.log(`error with ${error}`)
-    }
-    res.status(400).send(`Invalid album id format: ${req.params.id}`);
+    console.error("Error retrieving album:", error);
+    res.status(500).send("Server error retrieving album");
   }
 };
 
-// Create new album
 export const createAlbum = async (req: Request, res: Response) => {
   console.log(req.body);
+
   const validation = createAlbumSchema.safeParse(req.body);
 
   if (!validation.success) {
-    res.status(400).send({ error: "Validation failed", details: validation.error.issues });
-    return;
+    return res.status(400).json({
+      error: "Validation failed",
+      details: validation.error.issues
+    });
   }
 
-  const validatedData = validation.data;
+  const validated = validation.data;
+
   const newAlbum: Album = {
-    title: validatedData.title,
-    artist: validatedData.artist,
-    rating: validatedData.rating,
-    acquiredDate: validatedData.acquiredDate,
-    isBorrowed: validatedData.isBorrowed,
-    owner: validatedData.owner
+    title: validated.title,
+    artist: validated.artist,
+    rating: validated.rating,
+    acquiredDate: validated.acquiredDate,
+    isBorrowed: validated.isBorrowed,
+    owner: validated.owner
   };
 
   try {
     const result = await collections.albums?.insertOne(newAlbum);
-    if (result) {
-      res.status(201).location(`${result.insertedId}`).json({ message: `Created a new album with id ${result.insertedId}` })
-    }
-    else {
-      res.status(500).send("Failed to create a new album.");
-    }
+
+    res
+      .status(201)
+      .location(result!.insertedId.toString())
+      .json({ message: `Created a new album with id ${result!.insertedId}` });
+
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(`issue with inserting ${error.message}`);
-    }
-    else {
-      console.log(`error with ${error}`)
-    }
-    res.status(400).send(`Unable to create new album.`);
+    console.error("Error creating album:", error);
+    res.status(500).send("Unable to create new album.");
   }
 };
 
-// Update album
 export const updateAlbum = async (req: Request, res: Response) => {
-  console.log(req.body); //for now just log the data
+  const id = req.params.id;
 
-  res.json({ "message": `update album ${req.params.id} with data from the post message` })
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send("Invalid album id format");
+  }
+
+  const validation = createAlbumSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({
+      error: "Validation failed",
+      details: validation.error.issues
+    });
+  }
+
+  const updatedData = validation.data;
+
+  try {
+    const query = { _id: new ObjectId(id) };
+    const update = { $set: updatedData };
+
+    const result = await collections.albums?.updateOne(query, update);
+
+    if (result && result.matchedCount === 0) {
+      return res.status(404).send(`Unable to find album with id: ${id}`);
+    }
+
+    res.status(200).json({ message: "Album updated successfully" });
+
+  } catch (error) {
+    console.error("Error updating album:", error);
+    res.status(500).send("Unable to update album.");
+  }
 };
 
-// Delete album
 export const deleteAlbum = async (req: Request, res: Response) => {
-  res.json({ "message": `delete album ${req.params.id}` })
+  const id = req.params.id;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send("Invalid album id format");
+  }
+
+  try {
+    const query = { _id: new ObjectId(id) };
+
+    const result = await collections.albums?.deleteOne(query);
+
+    if (result?.deletedCount === 0) {
+      return res.status(404).send(`Unable to find album with id: ${id}`);
+    }
+
+    res.status(200).json({ message: "Album deleted successfully" });
+
+  } catch (error) {
+    console.error("Error deleting album:", error);
+    res.status(500).send("Unable to delete album.");
+  }
 };
