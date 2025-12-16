@@ -8,14 +8,15 @@ import {
   updateAlbum,
   deleteAlbum,
 } from '../controllers/album';
+import { validJWTProvided } from '../middleware/auth.middleware';
 
 
 const router: Router = express.Router();
 
 router.get('/', getAlbums);
 router.get('/:id', getAlbumById);
-router.post('/', validate(createAlbumSchema), createAlbum);
-router.put('/:id', updateAlbum);
-router.delete('/:id', deleteAlbum);
+router.post('/', validJWTProvided, validate(createAlbumSchema), createAlbum);
+router.put('/:id', validJWTProvided, validate(createAlbumSchema), updateAlbum);
+router.delete('/:id', validJWTProvided, deleteAlbum);
 
 export default router;

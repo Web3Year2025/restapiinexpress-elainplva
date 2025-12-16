@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import morgan from "morgan";
 import albumRoutes from './routes/albums';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
 import dotenv from 'dotenv';
 import { initDb } from './database';
 import cors from 'cors';
@@ -19,10 +21,13 @@ app.use(cors({
 }));
 
 app.use('/api/v1/albums', albumRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+
 app.get("/ping", async (_req: Request, res: Response) => {
-    res.json({
-        message: "Album endpoint implemented",
-    });
+  res.json({
+    message: "Album endpoint implemented",
+  });
 });
 
 

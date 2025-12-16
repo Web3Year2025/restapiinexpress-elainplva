@@ -7,7 +7,7 @@ const connectionString: string = process.env.DB_CONN_STRING || "";
 const dbName: string = process.env.DB_NAME || "WebAssignment_2025";
 const client = new MongoClient(connectionString);
 
-export const collections: { albums?: Collection; } = {};
+export const collections: { albums?: Collection; users?: Collection; } = {};
 
 if (connectionString == "") {
     throw new Error("No connection string  in .env");
@@ -22,7 +22,9 @@ export async function initDb(): Promise<void> {
         await client.connect();
         db = client.db(dbName);
         const albumsCollection: Collection = db.collection('albums')
+        const usersCollection: Collection = db.collection('users')
         collections.albums = albumsCollection;
+        collections.users = usersCollection;
         console.log('connected to database')
 
     }
@@ -38,6 +40,6 @@ export async function initDb(): Promise<void> {
 
 }
 export async function closeDb(): Promise<void> {
-  await client.close();
-  console.log("Database connection closed");
+    await client.close();
+    console.log("Database connection closed");
 }

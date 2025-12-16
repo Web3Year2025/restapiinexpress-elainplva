@@ -9,8 +9,6 @@ export interface Album {
   acquiredDate: Date;
   isBorrowed: boolean;
   owner?: string;
-
-
 }
 
 export const createAlbumSchema = z.object({
@@ -21,4 +19,3 @@ export const createAlbumSchema = z.object({
   isBorrowed: z.boolean(),
   owner: z.string().optional(),
 }).strict();
-
