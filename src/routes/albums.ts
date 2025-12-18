@@ -7,6 +7,7 @@ import {
   createAlbum,
   updateAlbum,
   deleteAlbum,
+  searchAlbums
 } from '../controllers/album';
 import { validJWTProvided } from '../middleware/auth.middleware';
 
@@ -14,6 +15,7 @@ import { validJWTProvided } from '../middleware/auth.middleware';
 const router: Router = express.Router();
 
 router.get('/', getAlbums);
+router.get('/search', searchAlbums);
 router.get('/:id', getAlbumById);
 router.post('/', validJWTProvided, validate(createAlbumSchema), createAlbum);
 router.put('/:id', validJWTProvided, validate(createAlbumSchema), updateAlbum);

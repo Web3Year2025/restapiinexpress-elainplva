@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
+enum role{admin, editor, ""}
+
 export interface User {
     name: string;
     phonenumber: string;
@@ -10,6 +12,8 @@ export interface User {
     lastUpdated?: Date;
     password?: string;
     hashedPassword?: string;
+    role?: role;
+    
 }
 
 export const createUserSchema = z.object({
@@ -17,6 +21,7 @@ export const createUserSchema = z.object({
     phonenumber: z.string().min(10),
     email: z.string().email(),
     password: z.string().min(8).max(64),
+    role: z.enum(["admin", "editor", ""])
 }).strict();
 
 export const loginSchema = z.object({

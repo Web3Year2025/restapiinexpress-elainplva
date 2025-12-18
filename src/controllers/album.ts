@@ -132,3 +132,26 @@ export const deleteAlbum = async (req: Request, res: Response) => {
     res.status(500).send("Unable to delete album.");
   }
 };
+
+export const searchAlbums = async (req: Request, res: Response) => {
+  const query = req.query.query as string;
+
+  // Basic validation
+  if (!query || query.trim() === "") {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+
+  try {
+    const albums = await collections.albums?.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { artist: { $regex: query, $options: "i" } }
+      ]
+    }).toArray();
+
+    res.status(200).json(albums);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Album search failed" });
+  }
+};
