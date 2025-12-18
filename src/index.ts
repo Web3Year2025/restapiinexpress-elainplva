@@ -22,6 +22,8 @@ app.use(cors({
 
 app.use('/api/v1/albums', albumRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/login', authRoutes);
+app.use('/api/v1/register', userRoutes);
 app.use('/api/v1/users', userRoutes);
 
 app.get("/ping", async (_req: Request, res: Response) => {
@@ -29,7 +31,6 @@ app.get("/ping", async (_req: Request, res: Response) => {
     message: "Album endpoint implemented",
   });
 });
-
 
 initDb();
 export { app };

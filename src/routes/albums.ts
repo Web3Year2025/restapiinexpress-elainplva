@@ -17,7 +17,7 @@ const router: Router = express.Router();
 router.get('/', getAlbums);
 router.get('/search', searchAlbums);
 router.get('/:id', getAlbumById);
-router.post('/', validJWTProvided, validate(createAlbumSchema), createAlbum);
+router.post('/',validJWTProvided, validate(createAlbumSchema), createAlbum);
 router.put('/:id', validJWTProvided, validate(createAlbumSchema), updateAlbum);
 router.delete('/:id', validJWTProvided, deleteAlbum);
 
