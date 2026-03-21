@@ -3,7 +3,7 @@ import morgan from "morgan";
 import albumRoutes from './routes/albums';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import { initDb } from './database';
 import cors from 'cors';
 

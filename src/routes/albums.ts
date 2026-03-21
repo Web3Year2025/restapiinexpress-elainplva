@@ -11,13 +11,15 @@ import {
 } from '../controllers/album';
 import { validJWTProvided } from '../middleware/auth.middleware';
 
-
 const router: Router = express.Router();
 
+// Public routes - anyone can read albums
 router.get('/', getAlbums);
 router.get('/search', searchAlbums);
 router.get('/:id', getAlbumById);
-router.post('/',validJWTProvided, validate(createAlbumSchema), createAlbum);
+
+// Protected routes - must be logged in to write
+router.post('/', validJWTProvided, validate(createAlbumSchema), createAlbum);
 router.put('/:id', validJWTProvided, validate(createAlbumSchema), updateAlbum);
 router.delete('/:id', validJWTProvided, deleteAlbum);
 

@@ -1,54 +1,64 @@
 import { Request, Response, NextFunction } from "express";
 import { verify as jwtVerify } from 'jsonwebtoken';
 
-export const validJWTProvided = async (
+const JWT_SECRET = process.env.JWT_SECRET || 'changeme-use-a-real-secret-in-env';
+
+// Extend Express Request type so req.user is available in controllers
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                sub: string;
+                email: string;
+                role: string;
+                name: string;
+            };
+        }
+    }
+}
+
+export const validJWTProvided = (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const authHeader = req.headers?.authorization;
+    const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader?.startsWith('Bearer')) {
-        console.log('No authorization header or not Bearer token: ' + authHeader);
-        return res.status(401).json({ message: 'Missing or invalid authorization header' });
-    }
-
-    const token: string | undefined = authHeader.split(' ')[1];
-
-    if (!token) {
-        console.log('No token found in authorization header');
+    // Check that the Authorization header exists and starts with "Bearer "
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
-    const secret = process.env.JWTSECRET || "not very secret";
+    const token = authHeader.split(' ')[1];
 
     try {
-        console.log('Verifying token...');
-        const payload = jwtVerify(token, secret);
-        res.locals.payload = payload;
+        // Verify the token and attach the decoded payload to req.user
+        const decoded = jwtVerify(token, JWT_SECRET) as {
+            sub: string;
+            email: string;
+            role: string;
+            name: string;
+        };
+        req.user = decoded;
         next();
-    } catch (err) {
-        console.error("Token verification failed:", err);
-        return res.status(403).json({ message: 'Invalid or expired token' });
+    } catch (error) {
+        return res.status(401).json({ message: 'Invalid or expired token' });
     }
 };
 
-export const isAdmin = async (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ) => {
-      
-       const role = res.locals?.payload?.role
+// Must be used AFTER validJWTProvided in the middleware chain
+export const isAdmin = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Not authenticated' });
+    }
 
-       console.log('role is ' + role)
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
 
-       if (role && role == 'admin') {
-        next();
-       }
-       else {
-        res.status(403).json({"opps" : "not an admin"});
-     }
-
-    };
-
+    next();
+};

@@ -15,7 +15,9 @@ router.get('/', (_req, res) => {
     });
 });
 
-router.post('/login', validate(loginSchema), handleLogin);
 router.post('/', validate(loginSchema), handleLogin);
+router.post('/login', validate(loginSchema), handleLogin);
+
 
 export default router;
+

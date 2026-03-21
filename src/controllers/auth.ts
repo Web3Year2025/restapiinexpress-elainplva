@@ -3,51 +3,67 @@ import { collections } from '../database';
 import { User } from '../models/user';
 import * as argon2 from 'argon2';
 import { sign as jwtSign } from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
 
-const createAccessToken = (user: User | null): string => {
-    const secret = process.env.JWTSECRET || "not very secret";
-    const expiresIn = '2h';
+const JWT_SECRET = process.env.JWT_SECRET || 'changeme-use-a-real-secret-in-env';
 
-    const payload = {
-        email: user?.email,
-        name: user?.name,
-        role: user?.role
-    };
+// Extend the User type to include MongoDB's _id field
+type UserDocument = User & { _id: ObjectId };
 
-    const token = jwtSign(payload, secret, { expiresIn });
-    return token;
+const createAccessToken = (user: UserDocument): string => {
+    return jwtSign(
+        {
+            sub: user._id.toString(),
+            email: user.email,
+            role: user.role || 'user',
+            name: user.name
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+    );
 };
 
 export const handleLogin = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const dummyHash = await argon2.hash("timing_attack_prevention");
-
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
-    }
-
     try {
-        const user = (await collections.users?.findOne({
-            email: email.toLowerCase(),
-        })) as unknown as User;
+        // Find user by email (case-insensitive)
+        const user = await collections.users?.findOne({
+            email: email.toLowerCase()
+        }) as UserDocument | null;
 
-        if (user && user.hashedPassword) {
-            const isPasswordValid = await argon2.verify(user.hashedPassword, password);
-
-            if (isPasswordValid) {
-                return res.status(200).json({ accessToken: createAccessToken(user) });
-            } else {
-                await argon2.verify(dummyHash, password);
-                return res.status(401).json({ message: 'Invalid email or password!' });
-            }
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        await argon2.verify(dummyHash, password);
-        return res.status(401).json({ message: 'Invalid email or password!' });
+        if (!user.hashedPassword) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Verify password with argon2
+        const passwordValid = await argon2.verify(user.hashedPassword, password);
+
+        if (!passwordValid) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Create JWT token
+        const token = createAccessToken(user);
+
+        // Return consistent token response - always { token, user }
+        return res.status(200).json({
+            token,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role || 'user',
+                phonenumber: user.phonenumber
+            }
+        });
 
     } catch (error) {
-        console.error("Error during login:", error);
-        res.status(500).json({ message: 'Server error during login' });
+        console.error('Login error:', error);
+        return res.status(500).json({ message: 'Login failed. Please try again.' });
     }
 };
