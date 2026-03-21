@@ -15,7 +15,7 @@ export const getAlbums = async (req: Request, res: Response) => {
 };
 
 export const getAlbumById = async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params['id'] as string;
 
   if (!ObjectId.isValid(id)) {
     return res.status(400).send("Invalid album id format");
@@ -74,7 +74,7 @@ export const createAlbum = async (req: Request, res: Response) => {
 };
 
 export const updateAlbum = async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params['id'] as string;
 
   if (!ObjectId.isValid(id)) {
     return res.status(400).send("Invalid album id format");
@@ -110,7 +110,7 @@ export const updateAlbum = async (req: Request, res: Response) => {
 };
 
 export const deleteAlbum = async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.params['id'] as string;
 
   if (!ObjectId.isValid(id)) {
     return res.status(400).send("Invalid album id format");

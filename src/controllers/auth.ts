@@ -3,17 +3,15 @@ import { collections } from '../database';
 import { User } from '../models/user';
 import * as argon2 from 'argon2';
 import { sign as jwtSign } from 'jsonwebtoken';
-import { ObjectId } from 'mongodb';
+import { WithId } from 'mongodb';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme-use-a-real-secret-in-env';
 
-// Extend the User type to include MongoDB's _id field
-type UserDocument = User & { _id: ObjectId };
-
-const createAccessToken = (user: UserDocument): string => {
+// WithId<User> is the correct MongoDB type — adds _id: ObjectId to User
+const createAccessToken = (user: WithId<User>): string => {
     return jwtSign(
         {
-            sub: user._id.toString(),
+            sub: user._id.toHexString(), // toHexString() returns a plain string — no type error
             email: user.email,
             role: user.role || 'user',
             name: user.name
@@ -29,8 +27,8 @@ export const handleLogin = async (req: Request, res: Response) => {
     try {
         // Find user by email (case-insensitive)
         const user = await collections.users?.findOne({
-            email: email.toLowerCase()
-        }) as UserDocument | null;
+            email: (email as string).toLowerCase()
+        }) as WithId<User> | null;
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });

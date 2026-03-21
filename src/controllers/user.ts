@@ -4,6 +4,7 @@ import { User } from '../models/user';
 import * as argon2 from 'argon2';
 import { ObjectId } from 'mongodb';
 
+
 export const createUser = async (req: Request, res: Response) => {
     const { name, phonenumber, email, password, role } = req.body;
 
@@ -69,7 +70,7 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 export const getUserById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params['id'] as string;
 
     try {
         const user = (await collections.users?.findOne(
@@ -89,7 +90,7 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params['id'] as string;
 
     try {
         if (!ObjectId.isValid(id)) {
@@ -110,7 +111,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 };
 
 export const deleteUserByEmail = async (req: Request, res: Response) => {
-    const { email } = req.params;
+    const email = req.params['email'] as string;
 
     try {
         const result = await collections.users?.deleteOne({

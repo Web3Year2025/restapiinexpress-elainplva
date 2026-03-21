@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verify as jwtVerify } from 'jsonwebtoken';
+import { verify as jwtVerify, JwtPayload } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme-use-a-real-secret-in-env';
 
@@ -17,6 +17,12 @@ declare global {
     }
 }
 
+// Helper: safely extract a string from a JWT claim (which may be string | string[])
+const extractString = (claim: string | string[] | undefined): string => {
+    if (!claim) return '';
+    return Array.isArray(claim) ? claim[0] : claim;
+};
+
 export const validJWTProvided = (
     req: Request,
     res: Response,
@@ -24,7 +30,6 @@ export const validJWTProvided = (
 ) => {
     const authHeader = req.headers.authorization;
 
-    // Check that the Authorization header exists and starts with "Bearer "
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
     }
@@ -32,14 +37,17 @@ export const validJWTProvided = (
     const token = authHeader.split(' ')[1];
 
     try {
-        // Verify the token and attach the decoded payload to req.user
-        const decoded = jwtVerify(token, JWT_SECRET) as {
-            sub: string;
-            email: string;
-            role: string;
-            name: string;
+        // jwtVerify returns string | JwtPayload — we cast to JwtPayload
+        const decoded = jwtVerify(token, JWT_SECRET) as JwtPayload;
+
+        // Safely extract each claim as a plain string
+        req.user = {
+            sub:   extractString(decoded['sub']),
+            email: extractString(decoded['email']),
+            role:  extractString(decoded['role']) || 'user',
+            name:  extractString(decoded['name']),
         };
-        req.user = decoded;
+
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Invalid or expired token' });
