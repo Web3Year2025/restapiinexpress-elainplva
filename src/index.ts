@@ -6,6 +6,7 @@ import userRoutes from './routes/users';
 import dotenv from "dotenv";
 import { initDb } from './database';
 import cors from 'cors';
+import lastfmRoutes from './routes/lastfm';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/login', authRoutes);
 app.use('/api/v1/register', userRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/lastfm', lastfmRoutes);
 
 app.get("/ping", async (_req: Request, res: Response) => {
   res.json({
