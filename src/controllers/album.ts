@@ -4,6 +4,26 @@ import { Album } from '../models/album';
 import { ObjectId } from 'mongodb';
 import { createAlbumSchema } from '../models/album';
 
+export const adminDeleteAlbum = async (req: Request, res: Response) => {
+  const id = req.params['id'] as string;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send('Invalid album id format');
+  }
+
+  try {
+    const result = await collections.albums?.deleteOne({ _id: new ObjectId(id) });
+
+    if (result?.deletedCount === 0) {
+      return res.status(404).json({ message: 'Album not found' });
+    }
+
+    res.status(200).json({ message: 'Album deleted by admin' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete album' });
+  }
+};
+
 export const getAlbums = async (req: Request, res: Response) => {
   try {
     const albums = await collections.albums?.find({}).toArray();
