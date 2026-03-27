@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   backend:
-    build: ./backend
+    build: ./restapiinexpress-elainplva
     ports:
       - "3001:3001"
     env_file:
@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build: ./frontend2025-elainplva
     ports:
       - "4200:80"
     depends_on:
