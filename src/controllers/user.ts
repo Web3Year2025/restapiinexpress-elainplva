@@ -4,34 +4,6 @@ import { User } from '../models/user';
 import * as argon2 from 'argon2';
 import { ObjectId } from 'mongodb';
 
-// Admin only - update a user's role
-export const updateUserRole = async (req: Request, res: Response) => {
-  const id = req.params['id'] as string;
-  const { role } = req.body;
-
-  if (!['admin', 'user'].includes(role)) {
-    return res.status(400).json({ message: 'Role must be admin or user' });
-  }
-
-  try {
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid user id format' });
-    }
-
-    const result = await collections.users?.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { role, lastUpdated: new Date() } }
-    );
-
-    if (result?.matchedCount === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.status(200).json({ message: `User role updated to ${role}` });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update role' });
-  }
-};
 
 export const createUser = async (req: Request, res: Response) => {
     const { name, phonenumber, email, password, role } = req.body;

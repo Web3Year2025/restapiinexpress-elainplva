@@ -7,10 +7,9 @@ import {
   createAlbum,
   updateAlbum,
   deleteAlbum,
-  searchAlbums,
-  adminDeleteAlbum
+  searchAlbums
 } from '../controllers/album';
-import { isAdmin, validJWTProvided } from '../middleware/auth.middleware';
+import { validJWTProvided } from '../middleware/auth.middleware';
 
 const router: Router = express.Router();
 
@@ -23,8 +22,5 @@ router.get('/:id', getAlbumById);
 router.post('/', validJWTProvided, validate(createAlbumSchema), createAlbum);
 router.put('/:id', validJWTProvided, validate(createAlbumSchema), updateAlbum);
 router.delete('/:id', validJWTProvided, deleteAlbum);
-
-// Admin only - delete any album
-router.delete('/admin/:id', validJWTProvided, isAdmin, adminDeleteAlbum);
 
 export default router;
